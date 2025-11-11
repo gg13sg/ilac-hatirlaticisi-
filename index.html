@@ -118,4 +118,198 @@
             <option value="daily">Her gün / Daily</option>
             <option value="every12">12 saatte bir / q12h</option>
             <option value="every8">8 saatte bir / q8h</option>
-            <option value="weekly">Haftalık
+            <option value="weekly">Haftalık / Weekly</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="notes">Not (opsiyonel) / Notes</label>
+          <input id="notes" placeholder="Aç tok / with meal...">
+        </div>
+      </div>
+      <div class="row">
+        <button id="save">Kaydet</button>
+        <button id="clear" class="secondary">Temizle</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 id="listTitle">Hatırlatıcılar</h3>
+      <div id="empty" class="muted">Henüz hatırlatıcı yok.</div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <p class="tiny muted">
+      iOS’ta web bildirimleri, uygulama açıkken ve izin verildiğinde çalışır. PWA olarak Ana Ekrana ekleyip açık bırakmanız gerekir.
+    </p>
+  </div>
+
+  <audio id="ding" preload="auto" src="./sounds/chime.mp3"></audio>
+
+  <script>
+    /* === i18n & sözler === */
+    const STR = {
+      tr:{strap:"Kendine iyi bak. İlacın zamanı geldi.", add:"İlaç Ekle", list:"Hatırlatıcılar",
+          empty:"Henüz hatırlatıcı yok.", taken:"Aldım ✅ 🐮🙂", snooze:"Ertele ⏰ 🐮🙁",
+          edit:"Düzenle", del:"Sil 🗑️", save:"Kaydet", clear:"Temizle"},
+      en:{strap:"Take care. It’s time for your medicine.", add:"Add Medication", list:"Reminders",
+          empty:"No reminders yet.", taken:"Taken ✅ 🐮🙂", snooze:"Snooze ⏰ 🐮🙁",
+          edit:"Edit", del:"Delete 🗑️", save:"Save", clear:"Clear"}
+    };
+    const QUOTES_TR = [
+      "Seni seviyorum! İyi ki varsın!", "Ben yaparım, şov olur!",
+      "İlacı içerim; erteleme yavrum!", "Çekilme; al onu!", "Bugün kendin için bir adım at."
+    ];
+    const QUOTES_EN = [
+      "I love you—so glad you exist!", "I’ll do it—showtime!",
+      "Don’t delay—take it now!", "Don’t back off—take it!", "One small step for yourself today."
+    ];
+
+    /* === helpers === */
+    const $ = s => document.querySelector(s);
+    const listEl = $('#list'), emptyEl=$('#empty'), langSel=$('#lang'), tzSel=$('#tz');
+
+    function t(k){ return STR[langSel.value][k]; }
+    function quote(){ return (langSel.value==='tr'?QUOTES_TR:QUOTES_EN)[Math.floor(Math.random()*5)] }
+
+    // time helpers (tz aware display; alarm yine cihaz saatine göre tetiklenir)
+    function nowMinutes(){ const d=new Date(); return d.getHours()*60 + d.getMinutes(); }
+    function fmtTimeHM(hhmm){
+      const [h,m]=hhmm.split(':').map(Number);
+      const d=new Date(); d.setHours(h,m,0,0);
+      try{
+        const tz = tzSel.value==='local'? Intl.DateTimeFormat().resolvedOptions().timeZone : tzSel.value;
+        return new Intl.DateTimeFormat(langSel.value, {hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz}).format(d);
+      }catch(e){ return hhmm; }
+    }
+
+    function saveStore(items){ localStorage.setItem('meds', JSON.stringify(items)); }
+    function loadStore(){ try{return JSON.parse(localStorage.getItem('meds')||'[]')}catch(e){return []} }
+    function savePrefs(){ localStorage.setItem('prefs', JSON.stringify({lang:langSel.value,tz:tzSel.value})) }
+    function loadPrefs(){ try{return JSON.parse(localStorage.getItem('prefs')||'{}')}catch(e){return {}} }
+
+    /* === render === */
+    function render(){
+      const items = loadStore();
+      listEl.innerHTML='';
+      emptyEl.style.display = items.length? 'none':'block';
+
+      items.forEach((it,idx)=>{
+        const card = document.createElement('div'); card.className='pill';
+        const left = document.createElement('div');
+        left.innerHTML = `<h4>${it.name}</h4>
+          <div class="muted">${fmtTimeHM(it.time)} • ${it.repeat}${it.notes? ' • '+it.notes:''}</div>`;
+
+        const actions = document.createElement('div'); actions.className='actions';
+        const ok=document.createElement('button'); ok.className='ok'; ok.textContent=t('taken');
+        const sn=document.createElement('button'); sn.className='snooze'; sn.textContent=t('snooze');
+        const ed=document.createElement('button'); ed.textContent=t('edit');
+        const dl=document.createElement('button'); dl.className='danger'; dl.textContent=t('del'); // 🗑️
+
+        actions.append(ok,sn,ed,dl); card.append(left,actions); listEl.append(card);
+        ok.onclick=()=>markTaken(idx);
+        sn.onclick=()=>snooze(idx,10);
+        ed.onclick=()=>editItem(idx);
+        dl.onclick=()=>delItem(idx);
+      });
+
+      $('#strap').textContent = t('strap');
+      $('#addTitle').textContent = t('add');
+      $('#listTitle').textContent = t('list');
+      $('#save').textContent = t('save');
+      $('#clear').textContent = t('clear');
+      emptyEl.textContent = t('empty');
+      $('#dailyQuote').textContent = quote();
+    }
+
+    /* === CRUD === */
+    function addItem(){
+      const name=$('#name').value.trim();
+      const time=$('#time').value;
+      if(!name||!time) return alert('İsim ve saat gerekli / Name and time required');
+      const notes=$('#notes').value.trim();
+      const repeat=$('#repeat').value;
+      const items=loadStore();
+      items.push({name,time,repeat,notes,nextDue:time,snoozeUntil:null});
+      saveStore(items); render();
+      $('#name').value=''; $('#time').value=''; $('#notes').value='';
+    }
+    function editItem(i){
+      const items=loadStore(); const it=items[i];
+      $('#name').value=it.name; $('#time').value=it.time; $('#notes').value=it.notes||''; $('#repeat').value=it.repeat;
+      items.splice(i,1); saveStore(items); render();
+    }
+    function delItem(i){ const items=loadStore(); items.splice(i,1); saveStore(items); render(); }
+
+    function nextDueFrom(it){
+      const [hh,mm]=it.time.split(':').map(Number);
+      const base = new Date(); base.setHours(hh,mm,0,0);
+      if(it.repeat==='every8') base.setHours(base.getHours()+8);
+      else if(it.repeat==='every12') base.setHours(base.getHours()+12);
+      else if(it.repeat==='weekly') base.setDate(base.getDate()+7);
+      else base.setDate(base.getDate()+1);
+      return base.toTimeString().slice(0,5);
+    }
+    function markTaken(i){
+      const items=loadStore(); const it=items[i];
+      it.snoozeUntil=null; it.nextDue = nextDueFrom(it);
+      saveStore(items); render();
+    }
+    function snooze(i, minutes){
+      const items=loadStore(); const it=items[i];
+      const d=new Date(); d.setMinutes(d.getMinutes()+minutes);
+      it.snoozeUntil = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      saveStore(items); render();
+    }
+
+    /* === notifications === */
+    async function ensurePerms(){
+      try { if('Notification' in window && Notification.permission!=='granted') await Notification.requestPermission(); }
+      catch(e){}
+    }
+    function notify(it){
+      const quoteLine = $('#dailyQuote').textContent || quote();
+      const body = `${it.name} • ${fmtTimeHM(it.time)}\n${quoteLine}`;
+      try{
+        new Notification('İlaçlarını Unutma 😎🧡', { body, icon:'./icons/icon-192.png', tag: it.name });
+      }catch(e){ alert(body); }
+      const ding=$('#ding'); ding.currentTime=0; ding.play().catch(()=>{});
+    }
+    function tick(){
+      const items=loadStore(); if(!items.length) return;
+      const mins = nowMinutes();
+      items.forEach((it)=>{
+        const due = it.snoozeUntil || it.nextDue || it.time;
+        const [hh,mm] = due.split(':').map(Number);
+        const dueM = hh*60+mm;
+        if(dueM === mins){
+          notify(it);
+          it.snoozeUntil=null;
+          it.nextDue = nextDueFrom(it);
+        }
+      });
+      saveStore(items);
+    }
+
+    /* === boot === */
+    (function init(){
+      const prefs=loadPrefs(); if(prefs.lang) langSel.value=prefs.lang; if(prefs.tz) tzSel.value=prefs.tz;
+      langSel.onchange = ()=>{ savePrefs(); render(); };
+      tzSel.onchange = ()=>{ savePrefs(); render(); };
+
+      $('#save').onclick=addItem;
+      $('#clear').onclick=()=>{ $('#name').value=''; $('#time').value=''; $('#notes').value=''; };
+
+      ensurePerms();
+      render();
+      setInterval(tick, 60*1000);
+
+      if('serviceWorker' in navigator){
+        window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
+      }
+    })();
+  </script>
+</body>
+</html>
+
