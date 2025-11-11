@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>İlaçlarını Unutma 😎❤️</title>
+  <meta name="theme-color" content="#ffc0cb" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <style>
+    :root { --pink:#ffd1e6; --dark:#2b1f2f; --accent:#ff6fa3; --accent2:#ff9fc2; }
+    html, body { margin:0; height:100%; font-family: system-ui, sans-serif; color:var(--dark); }
+    body {
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.6) 0 30%, transparent 31%),
+        radial-gradient(circle at 80% 10%, rgba(255,255,255,0.5) 0 26%, transparent 27%),
+        linear-gradient(180deg, #ffe0eb 0%, #ffc0d6 100%);
+      position:relative;
+    }
+    body::before {
+      content:""; pointer-events:none; position:fixed; inset:0; opacity:.25;
+      background-image:
+        radial-gradient(circle 4px at 10px 10px, #ff6fa3 99%, transparent 100%),
+        radial-gradient(circle 4px at 40px 28px, #ff6fa3 99%, transparent 100%),
+        radial-gradient(circle 3px at 70px 6px, #ff6fa3 99%, transparent 100%);
+      background-size:80px 40px;
+    }
+    .app { max-width:880px; margin:auto; padding:24px; }
+    .card { background:#fff; padding:20px; border-radius:20px; margin:16px 0; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+    .title { font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+    .list { display:grid; gap:12px; }
+    .pill { display:flex; justify-content:space-between; border:1px solid #f4d7e5; padding:12px; border-radius:14px; }
+    .actions { display:flex; gap:6px; }
+    button { border:none; cursor:pointer; padding:10px 14px; border-radius:12px; font-weight:600; }
+    .ok { background:#34c759; color:#fff; }
+    .snooze { background:#ff9500; color:#fff; }
+    .danger { background:#ef476f; color:#fff; }
+    .secondary { background:#eee; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <div class="title">
+        <span>İlaçlarını Unutma 😎❤️ / <em>Take Your Medicine</em></span>
+        <select id="lang">
+          <option value="tr" selected>TR</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
+      <p id="strap">Kendine iyi bak. İlacın zamanı geldi.</p>
+    </div>
+
+    <div class="card">
+      <h3>İlaç Ekle</h3>
+      <input id="name" placeholder="İlaç adı">
+      <input id="time" type="time">
+      <select id="repeat">
+        <option value="daily">Her gün</option>
+        <option value="every12">12 saatte bir</option>
+        <option value="every8">8 saatte bir</option>
+        <option value="weekly">Haftalık</option>
+      </select>
+      <input id="notes" placeholder="Not (isteğe bağlı)">
+      <button id="save">Kaydet</button>
+    </div>
+
+    <div class="card">
+      <h3>Hatırlatıcılar</h3>
+      <div id="empty">Henüz hatırlatıcı yok</div>
+      <div id="list" class="list"></div>
+    </div>
+  </div>
+
+  <audio id="ding" src="./sounds/chime.mp3" preload="auto"></audio>
+
+  <script>
+    const phrases = [
+      "Seni seviyorum!", "İyi ki varsın!", "Ben yaparım, şov olur!",
+      "İlacı içerim, erteleme yavrum!", "Çekilme, yaşarsın; al onu!"
+    ];
+    const $ = sel=>document.querySelector(sel);
+    function load(){ return JSON.parse(localStorage.getItem("meds")||"[]"); }
+    function save(d){ localStorage.setItem("meds",JSON.stringify(d)); }
+    function render(){
+      const items=load(); const list=$("#list"), empty=$("#empty");
+      list.innerHTML=""; empty.style.display=items.length?"none":"block";
+      items.forEach((it,i)=>{
+        const row=document.createElement("div"); row.className="pill";
+        row.innerHTML=`<div><b>${it.name}</b><br><small>${it.time} • ${it.repeat}</small></div>`;
+        const a=document.createElement("div"); a.className="actions";
+        const ok=document.createElement("button"); ok.className="ok"; ok.textContent="Aldım ✅ 🐮🙂";
+        ok.onclick=()=>{ it.next=timeNext(it); save(items); render(); };
+        const sn=document.createElement("button"); sn.className="snooze"; sn.textContent="Ertele ⏰ 🐮🙁";
+        sn.onclick=()=>{ it.snooze=timePlus(10); save(items); render(); };
+        const del=document.createElement("button"); del.className="danger"; del.textContent="Sil";
+        del.onclick=()=>{ items.splice(i,1); save(items); render(); };
+        a.append(ok,sn,del); row.append(a); list.append(row);
+      });
+    }
+    function timePlus(m){ const d=new Date(); d.setMinutes(d.getMinutes()+m); return d.toTimeString().slice(0,5); }
+    function timeNext(it){ return timePlus(it.repeat==="every8"?480:it.repeat==="every12"?720:it.repeat==="weekly"?10080:1440); }
+    function tick(){
+      const items=load(), now=new Date(), t=now.toTimeString().slice(0,5);
+      items.forEach(it=>{ const due=it.snooze||it.next||it.time; if(due===t){ notify(it); it.snooze=null; it.next=timeNext(it); save(items); }});
+    }
+    function notify(it){
+      const msg = phrases[Math.floor(Math.random()*phrases.length)];
+      new Notification("İlaçlarını Unutma 😎❤️",{ body:`${it.name}\n${msg}`, icon:"./icons/icon-192.png" });
+      const ding=$("#ding"); ding.currentTime=0; ding.play().catch(()=>{});
+    }
+    if(Notification.permission!=="granted"){ Notification.requestPermission(); }
+    $("#save").onclick=()=>{ const items=load(); items.push({name:$("#name").value,time:$("#time").value,repeat:$("#repeat").value,notes:$("#notes").value}); save(items); render(); };
+    render(); setInterval(tick,60000);
+    if("serviceWorker" in navigator){ navigator.serviceWorker.register("./sw.js"); }
+  </script>
+</body>
+</html>
