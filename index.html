@@ -5,74 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>İlaçlarını Unutma 😎🧡</title>
 
-  <!-- PWA & Theme -->
-  <meta name="theme-color" content="#ffd1e6" />
+  <!-- PWA / GitHub Pages -->
+  <meta name="theme-color" content="#ffe9f1" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icons/icon-192.png" />
 
-  <!-- iOS PWA meta -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
-
   <style>
-    :root {
-      --pink:#ffd1e6; --dark:#2b1f2f; --accent:#ff6fa3; --accent2:#ff9fc2;
-      --orange:#ff7f27;
+    :root{
+      --cream:#fff7fb;           /* daha sade krem pembe zemin */
+      --cream2:#ffe3f0;
+      --dark:#2b1f2f;
+      --accent:#ff6fa3;
+      --accent2:#ff9fc2;
+      --ok:#34c759;
+      --snooze:#ff9500;
+      --danger:#ef476f;
+      --heartPink:#ff6fa3;
+      --heartOrange:#ff7f27;
+      --card:#ffffff;
+      --border:#f0d9e4;
     }
-    html, body { height:100%; margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--dark); }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--dark)}
 
-    /* Daha sade arka plan + arada kalpler */
-    body {
+    /* Sade degrade + aralara kalpler */
+    body{
       background:
-        linear-gradient(180deg,#ffe8f1 0%,#ffd3e4 100%);
-      position:relative; overflow-x:hidden;
-    }
-    /* Kalp deseni: pembe & turuncu, geniş aralıklı ve yumuşak */
-    body::before{
-      content:""; position:fixed; inset:0; pointer-events:none; opacity:.15;
-      background-image:
-        radial-gradient(circle 6px at 12% 18%, #ff6fa3 99%, transparent 100%),
-        radial-gradient(circle 7px at 72% 28%, #ff7f27 99%, transparent 100%),
-        radial-gradient(circle 5px at 28% 70%, #ff6fa3 99%, transparent 100%),
-        radial-gradient(circle 6px at 88% 82%, #ff7f27 99%, transparent 100%);
-      background-size: 420px 340px;
-      background-repeat: no-repeat;
+        radial-gradient(24px 16px at 12% 18%, rgba(255,127,39,.12) 35%, transparent 36%),
+        radial-gradient(22px 14px at 78% 12%, rgba(255,111,163,.12) 35%, transparent 36%),
+        radial-gradient(20px 12px at 85% 82%, rgba(255,127,39,.10) 35%, transparent 36%),
+        radial-gradient(18px 12px at 15% 85%, rgba(255,111,163,.10) 35%, transparent 36%),
+        linear-gradient(180deg, var(--cream) 0%, var(--cream2) 100%);
+      background-attachment: fixed;
     }
 
-    .app { max-width:900px; margin:0 auto; padding:24px; }
-    .card { background:#fff; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:20px; margin:16px 0; }
-    .title { display:flex; align-items:center; gap:10px; font-size:1.6rem; font-weight:800; flex-wrap:wrap; }
-    .title .badge { background:#ffe6f1; color:#ff4f96; padding:6px 10px; border-radius:999px; font-weight:700; }
-    .row { display:flex; gap:12px; flex-wrap:wrap; }
-    .row > * { flex:1 1 220px; min-width:220px; }
-    label { display:block; font-size:.9rem; margin-bottom:6px; }
-    input, select { width:100%; padding:12px 14px; border-radius:12px; border:1px solid #e8d4df; background:#fff; }
-    button { padding:12px 16px; border:none; border-radius:14px; background:var(--accent); color:#fff; font-weight:700; cursor:pointer; }
-    button.secondary { background:#eee; color:#333; }
-    button.danger { background:#ef476f; display:flex; align-items:center; gap:6px; }
-    .trash { width:16px; height:16px; display:inline-block; }
-    .muted{ color:#6a5a66; font-size:.95rem; }
-    .list { display:grid; grid-template-columns:1fr; gap:12px; }
-    .pill { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px; border:1px solid #f4d7e5; border-radius:14px; }
-    .pill h4 { margin:0; font-size:1rem; }
-    .lang { margin-left:auto; }
-    .foot { text-align:center; color:#6a5a66; font-size:.85rem; margin-top:8px; }
-    .orange-heart { color: var(--orange); }
+    .app{max-width:920px;margin:0 auto;padding:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.06);padding:20px;margin:16px 0}
+    .title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .title h1{margin:0;font-size:1.55rem}
+    .badge{background:#ffe6f1;color:#ff4f96;padding:6px 10px;border-radius:999px;font-weight:700}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row>*{flex:1 1 220px}
+    label{display:block;font-size:.9rem;margin-bottom:6px}
+    input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e8d4df;background:#fff}
+    button{padding:12px 16px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    button.secondary{background:#eee;color:#333}
+    button.ok{background:var(--ok)}
+    button.snooze{background:var(--snooze)}
+    button.danger{background:var(--danger)}
+    .list{display:grid;grid-template-columns:1fr;gap:12px}
+    .pill{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--border);border-radius:14px;background:#fff}
+    .pill h4{margin:0;font-size:1rem}
+    .muted{color:#6a5a66;font-size:.92rem}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .lang{margin-left:auto}
+    .foot{text-align:center;color:#6a5a66;font-size:.85rem;margin-top:8px}
+    .tiny{font-size:.85rem}
   </style>
 </head>
 <body>
   <div class="app">
     <div class="card">
       <div class="title">
-        <span>İlaçlarını Unutma 😎<span class="orange-heart">🧡</span> / <em>Take Your Medicine</em></span>
+        <h1>İlaçlarını Unutma 😎🧡 <span class="tiny">/ <em>Take Your Medicine</em></span></h1>
         <span class="badge">PWA</span>
         <select id="lang" class="lang" aria-label="Dil / Language">
           <option value="tr" selected>Türkçe</option>
           <option value="en">English</option>
         </select>
       </div>
-      <p class="muted" id="strap">Kendine iyi bak. İlacın zamanı geldi.</p>
+      <p class="muted" id="quote">Kendine iyi bak. İlacın zamanı geldi.</p>
+
+      <div class="row">
+        <div>
+          <label for="tz">Saat Dilimi / Time Zone</label>
+          <select id="tz"></select>
+        </div>
+      </div>
     </div>
 
     <div class="card" id="formCard">
@@ -80,11 +89,11 @@
       <div class="row">
         <div>
           <label for="name">İlaç adı / Medication</label>
-          <input id="name" placeholder="Örn: Metformin 500 mg"/>
+          <input id="name" placeholder="Örn: Metformin 500 mg">
         </div>
         <div>
-          <label for="time">Saat</label>
-          <input id="time" type="time"/>
+          <label for="time">Saat (24s)</label>
+          <input id="time" type="time">
         </div>
         <div>
           <label for="repeat">Tekrar</label>
@@ -95,15 +104,11 @@
             <option value="weekly">Haftalık / Weekly</option>
           </select>
         </div>
-        <div>
-          <label for="tz">Zaman Dilimi / Time Zone</label>
-          <select id="tz"></select>
-        </div>
       </div>
       <div class="row">
-        <div style="flex:1 1 100%">
-          <label for="notes">Günlük söz / Daily phrase (bildirimde de gösterilir)</label>
-          <input id="notes" placeholder="Seni seviyorum! İyi ki varsın!"/>
+        <div>
+          <label for="notes">Not (İsteğe bağlı) / Notes (optional)</label>
+          <input id="notes" placeholder="Aç tok... / with meal...">
         </div>
       </div>
       <div class="row">
@@ -119,186 +124,200 @@
     </div>
 
     <p class="foot">
-      Bildirim ve ses için izin veriniz. “Ana Ekrana Ekle” ile uygulama olarak kullanabilirsiniz.
-      iOS’ta arka planda gerçek push için ek sunucu gerekir (aşağıdaki notlara bakın).
+      Bildirim ve ses için izin veriniz. Bu uygulama çevrimdışı da çalışır ve Ana Ekrana eklenebilir.
     </p>
   </div>
 
-  <audio id="ding" preload="auto" src="./sounds/chime.wav"></audio>
+  <audio id="ding" preload="auto" src="./sounds/chime.mp3"></audio>
 
   <script>
-    // i18n strings
+    /* ====== Dil / i18n ====== */
     const STR = {
-      tr: {
-        strap:"Kendine iyi bak. İlacın zamanı geldi.", add:"İlaç Ekle", list:"Hatırlatıcılar",
-        empty:"Henüz hatırlatıcı yok.", taken:"Aldım ✅ 🐮🙂", snooze:"Ertele ⏰ 🐮🙁",
-        edit:"Düzenle", del:"Sil", save:"Kaydet", clear:"Temizle"
-      },
-      en: {
-        strap:"Take care. It’s time for your medicine.", add:"Add Medication", list:"Reminders",
-        empty:"No reminders yet.", taken:"Taken ✅ 🐮🙂", snooze:"Snooze ⏰ 🐮🙁",
-        edit:"Edit", del:"Delete", save:"Save", clear:"Clear"
-      }
+      tr:{ add:"İlaç Ekle", list:"Hatırlatıcılar", empty:"Henüz hatırlatıcı yok.",
+           taken:"Aldım ✅ 🐮🙂", snooze:"Ertele ⏰ 🐮🙁", edit:"Düzenle", del:"Sil 🧹",
+           req:"İsim ve saat gerekli / Name and time required" },
+      en:{ add:"Add Medication", list:"Reminders", empty:"No reminders yet.",
+           taken:"Taken ✅ 🐮🙂", snooze:"Snooze ⏰ 🐮🙁", edit:"Edit", del:"Delete 🧹",
+           req:"Name and time required" }
     };
+    const QUOTES_TR = [
+      "Kendine iyi bak. İlacın zamanı geldi.",
+      "Seni seviyorum! İyi ki varsın!",
+      "İlacı içerim, erteleme yavrum!",
+      "Çekilme, yaşarsın; uyarıyorum, al onu!",
+      "Ben yaparım, şov olur!"
+    ];
+    const QUOTES_EN = [
+      "Take care. It’s medicine time.",
+      "I love you — so glad you exist!",
+      "Don’t delay — take it now!",
+      "Don’t back off — take it!",
+      "I’ve got this — showtime!"
+    ];
+    const $ = s => document.querySelector(s);
+    const listEl = $('#list'), emptyEl = $('#empty'), langSel = $('#lang'), tzSel = $('#tz');
 
-    // Örnek sevimli sözler (fallback)
-    const phrasesTR = ["Seni seviyorum!", "İyi ki varsın!", "Ben yaparım, şov olur!", "Erteleme, şimdi al!"];
-    const phrasesEN = ["I love you!", "So glad you exist!", "Showtime!", "Don’t delay—take it now!"];
+    /* ====== Saat dilimi listesi (yaygın TZ + mevcut) ====== */
+    const COMMON_TZ = ["Europe/Istanbul","UTC","Europe/London","Europe/Paris","America/New_York","America/Los_Angeles","Asia/Dubai","Asia/Tokyo","Australia/Sydney"];
+    const currentTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const tzSet = Array.from(new Set([currentTZ, ...COMMON_TZ])).sort();
+    tzSet.forEach(z => {
+      const o = document.createElement('option');
+      o.value = z; o.textContent = z; if(z===currentTZ) o.selected = true; tzSel.appendChild(o);
+    });
 
-    const $ = sel => document.querySelector(sel);
-    const listEl = $('#list'), emptyEl = $('#empty'), langSel = $('#lang');
+    /* ====== Depo ====== */
+    const K = { meds:'meds', tz:'tz', lang:'lang' };
+    function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+    function load(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)) ?? fallback }catch{ return fallback } }
 
+    /* ====== Yardımcılar ====== */
     function t(key){ return STR[langSel.value][key]; }
-    function nowMinutes(tz){ const d=new Date(); return Number(new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz}).format(d).replace(':','')); }
-
-    // Timezone dropdown
-    const tzSel = $('#tz');
-    (function fillTZ(){
-      try {
-        const zones = Intl.supportedValuesOf ? Intl.supportedValuesOf('timeZone') : ["UTC"];
-        zones.forEach(z=>{
-          const opt = document.createElement('option');
-          opt.value=z; opt.textContent=z; tzSel.appendChild(opt);
-        });
-        tzSel.value = localStorage.getItem('tz') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-      } catch(e){ tzSel.innerHTML='<option value="UTC">UTC</option>'; tzSel.value='UTC'; }
-      tzSel.onchange = ()=> localStorage.setItem('tz', tzSel.value);
-    })();
-
-    function saveStore(items){ localStorage.setItem('meds', JSON.stringify(items)); }
-    function loadStore(){ try{return JSON.parse(localStorage.getItem('meds')||'[]')}catch(e){return []} }
+    function quoteToday(){
+      const d = new Date();
+      const idx = d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+      const arr = langSel.value==='tr'? QUOTES_TR : QUOTES_EN;
+      return arr[idx % arr.length];
+    }
+    function minsInTZ(date, tz){
+      // date -> seçili tz'de saat:dakika
+      const fmt = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz});
+      const [hh,mm] = fmt.format(date).split(':').map(Number);
+      return hh*60 + mm;
+    }
 
     function render(){
-      const items = loadStore();
-      listEl.innerHTML='';
-      emptyEl.style.display = items.length? 'none':'block';
-      items.forEach((it,idx)=>{
-        const card = document.createElement('div'); card.className='pill';
-        const left = document.createElement('div');
-        left.innerHTML = `<h4>${it.name}</h4>
-          <div class="muted">${it.time} • ${it.repeat} • ${it.tz} ${it.notes? '• '+it.notes:''}</div>`;
-        const actions = document.createElement('div'); actions.className='actions';
-        const ok = document.createElement('button'); ok.textContent=t('taken'); ok.className='ok';
-        const sn = document.createElement('button'); sn.textContent=t('snooze'); sn.className='snooze';
-        const ed = document.createElement('button'); ed.textContent=t('edit');
-        const dl = document.createElement('button'); dl.className='danger'; dl.innerHTML = `
-          <svg class="trash" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M9 3h6l1 2h5v2H3V5h5l1-2Zm1 8v6h2v-6h-2Zm4 0v6h2v-6h-2ZM5 7h14l-1 14H6L5 7Z"/>
-          </svg> ${t('del')}`;
-        actions.append(ok,sn,ed,dl); card.append(left,actions); listEl.append(card);
-        ok.onclick=()=>markTaken(idx);
-        sn.onclick=()=>snooze(idx,10);
-        ed.onclick=()=>editItem(idx);
-        dl.onclick=()=>delItem(idx);
-      });
-      // statik metinler
-      $('#strap').textContent = t('strap');
       $('#addTitle').textContent = t('add');
       $('#listTitle').textContent = t('list');
-      $('#save').textContent = t('save');
-      $('#clear').textContent = t('clear');
       emptyEl.textContent = t('empty');
+      $('#quote').textContent = quoteToday();
+
+      const items = load(K.meds, []);
+      listEl.innerHTML = '';
+      emptyEl.style.display = items.length ? 'none' : 'block';
+
+      items.forEach((it, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'pill';
+
+        const left = document.createElement('div');
+        left.innerHTML = `<h4>${it.name}</h4><div class="muted">${it.time} • ${it.repeat} ${it.notes? '• '+it.notes:''}</div>`;
+
+        const acts = document.createElement('div');
+        acts.className = 'actions';
+
+        const ok = document.createElement('button'); ok.className='ok'; ok.textContent=t('taken');
+        const sn = document.createElement('button'); sn.className='snooze'; sn.textContent=t('snooze');
+        const ed = document.createElement('button'); ed.textContent=t('edit');
+        const dl = document.createElement('button'); dl.className='danger'; dl.textContent=t('del');
+
+        ok.onclick = () => markTaken(i);
+        sn.onclick = () => snooze(i, 10);
+        ed.onclick = () => editItem(i);
+        dl.onclick = () => delItem(i);
+
+        acts.append(ok,sn,ed,dl);
+        wrap.append(left,acts);
+        listEl.append(wrap);
+      });
     }
 
     function addItem(){
       const name=$('#name').value.trim();
-      const time=$('#time').value; // "HH:MM"
-      if(!name||!time) return alert('İsim ve saat gerekli / Name and time required');
+      const time=$('#time').value;
+      if(!name || !time){ alert(t('req')); return; }
       const notes=$('#notes').value.trim();
       const repeat=$('#repeat').value;
-      const tz = tzSel.value || 'UTC';
-      const items=loadStore();
-      items.push({name,time,repeat,notes,tz,nextDue:time, snoozeUntil:null});
-      saveStore(items); render();
+
+      const items = load(K.meds, []);
+      items.push({name,time,repeat,notes,nextDue:time,snoozeUntil:null});
+      save(K.meds, items);
       $('#name').value=''; $('#time').value=''; $('#notes').value='';
+      render();
     }
-
     function editItem(i){
-      const items=loadStore(); const it=items[i];
-      $('#name').value=it.name; $('#time').value=it.time; $('#notes').value=it.notes||''; $('#repeat').value=it.repeat; tzSel.value=it.tz;
-      items.splice(i,1); saveStore(items); render();
+      const items = load(K.meds, []);
+      const it = items[i];
+      $('#name').value=it.name; $('#time').value=it.time; $('#notes').value=it.notes||''; $('#repeat').value=it.repeat;
+      items.splice(i,1); save(K.meds, items); render();
     }
-
-    function delItem(i){ const items=loadStore(); items.splice(i,1); saveStore(items); render(); }
-
+    function delItem(i){
+      const items = load(K.meds, []);
+      items.splice(i,1); save(K.meds, items); render();
+    }
     function markTaken(i){
-      const items=loadStore(); const it=items[i];
-      it.snoozeUntil=null; it.nextDue = nextDueFrom(it);
-      saveStore(items); render();
+      const items=load(K.meds, []);
+      const it=items[i];
+      it.snoozeUntil = null;
+      it.nextDue = nextDueFrom(it);
+      save(K.meds, items); render();
     }
-
     function snooze(i, minutes){
-      const items=loadStore(); const it=items[i];
-      const now = new Date();
-      const sno = new Date(now.getTime()+minutes*60000);
-      const hh = sno.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:it.tz});
-      const mm = sno.toLocaleString('en-GB',{minute:'2-digit',timeZone:it.tz});
-      it.snoozeUntil = `${hh}:${mm}`;
-      saveStore(items); render();
+      const items=load(K.meds, []);
+      const it=items[i];
+      const d = new Date(); d.setMinutes(d.getMinutes()+minutes);
+      const fmt = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tzSel.value});
+      it.snoozeUntil = fmt.format(d);
+      save(K.meds, items); render();
     }
-
     function nextDueFrom(it){
-      const [hh,mm]=it.time.split(':').map(Number);
-      const base = new Date();
-      // hedef TZ'ye göre günü/saatleri kurgulamak basitleştirilmiş yaklaşım
-      base.setHours(hh,mm,0,0);
-      if(it.repeat==='every8') base.setHours(base.getHours()+8);
-      else if(it.repeat==='every12') base.setHours(base.getHours()+12);
-      else if(it.repeat==='weekly') base.setDate(base.getDate()+7);
-      else base.setDate(base.getDate()+1); // daily
-      return base.toTimeString().slice(0,5);
+      const [hh,mm] = it.time.split(':').map(Number);
+      const d = new Date();
+      // tz'ye göre yeni due saati
+      const inTZ = new Date(new Date().toLocaleString('en-US', { timeZone: tzSel.value }));
+      inTZ.setHours(hh,mm,0,0);
+      if(it.repeat==='every8') inTZ.setHours(inTZ.getHours()+8);
+      else if(it.repeat==='every12') inTZ.setHours(inTZ.getHours()+12);
+      else if(it.repeat==='weekly') inTZ.setDate(inTZ.getDate()+7);
+      else inTZ.setDate(inTZ.getDate()+1);
+      const fmt = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tzSel.value});
+      return fmt.format(inTZ);
     }
 
     async function ensurePerms(){
-      try { if(window.Notification && Notification.permission!=='granted') await Notification.requestPermission(); } catch(e){}
+      try{ if(Notification && Notification.permission!=='granted'){ await Notification.requestPermission(); } }catch{}
     }
-
     function notify(it){
-      // Günlük söz: kullanıcı girdiyse onu, yoksa varsayılanlardan
-      const msgs = (langSel.value==='tr' ? phrasesTR : phrasesEN);
-      const phrase = (it.notes && it.notes.trim()) ? it.notes.trim() : msgs[Math.floor(Math.random()*msgs.length)];
-      const body = `${it.name} • ${it.time} ${it.tz}\n${phrase}`;
+      const phrase = quoteToday();
+      const body = `${it.name} • ${it.time}\n${phrase}`;
       try{
         new Notification('İlaçlarını Unutma 😎🧡', { body, icon:'./icons/icon-192.png', tag: it.name });
-      }catch(e){ alert(body); }
-      const ding=$('#ding'); if(ding){ ding.currentTime=0; ding.play().catch(()=>{}); }
+      }catch{ alert(`${it.name}\n${phrase}`); }
+      const ding = $('#ding'); ding.currentTime=0; ding.play().catch(()=>{});
     }
 
     function tick(){
-      const items=loadStore(); if(!items.length) return;
-      const tz = tzSel.value || 'UTC';
-      // “HHMM” integer kıyaslaması
-      const d = new Date();
-      const hh = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',hour12:false,timeZone:tz}).format(d);
-      const mm = new Intl.DateTimeFormat('en-GB',{minute:'2-digit',timeZone:tz}).format(d);
-      const mins = Number(hh+mm);
-
-      items.forEach((it,i)=>{
+      const items = load(K.meds, []); if(!items.length) return;
+      const minsNow = minsInTZ(new Date(), tzSel.value);
+      items.forEach(it=>{
         const due = it.snoozeUntil || it.nextDue || it.time;
-        const parts = due.split(':'); if(parts.length<2) return;
-        const dueN = Number(parts[0].padStart(2,'0')+parts[1].padStart(2,'0'));
-        if(dueN === mins){
+        const [hh,mm] = due.split(':').map(Number);
+        const dueM = hh*60+mm;
+        if(dueM === minsNow){
           notify(it);
-          it.snoozeUntil=null;
+          it.snoozeUntil = null;
           it.nextDue = nextDueFrom(it);
         }
       });
-      saveStore(items);
+      save(K.meds, items);
     }
 
-    // UI wiring
-    $('#save').onclick=addItem;
-    $('#clear').onclick=()=>{ $('#name').value=''; $('#time').value=''; $('#notes').value=''; };
-    langSel.onchange=render;
+    /* ====== Events & Boot ====== */
+    $('#save').onclick = addItem;
+    $('#clear').onclick = ()=>{ $('#name').value=''; $('#time').value=''; $('#notes').value=''; };
+    langSel.onchange = ()=>{ save(K.lang, langSel.value); render(); };
+    tzSel.onchange = ()=>{ save(K.tz, tzSel.value); render(); };
 
-    // boot
+    // restore prefs
+    const savedLang = load(K.lang, null); if(savedLang){ langSel.value = savedLang; }
+    const savedTZ = load(K.tz, null); if(savedTZ){ tzSel.value = savedTZ; }
+
     ensurePerms();
     render();
     setInterval(tick, 60*1000);
 
-    // PWA service worker
     if('serviceWorker' in navigator){
-      window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
+      window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js'));
     }
   </script>
 </body>
